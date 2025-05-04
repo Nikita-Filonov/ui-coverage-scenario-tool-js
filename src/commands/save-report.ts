@@ -6,7 +6,6 @@ import { UICoverageBuilder } from '../coverage/builder';
 import { UICoverageHistoryBuilder } from '../history/builder';
 import { UIReportsStorage } from '../reports/storage';
 import { getSettings } from '../config/core';
-import { getDefaultAppHistoryState } from '../history/default';
 
 const logger = getLogger('SAVE_REPORT');
 
@@ -31,7 +30,7 @@ export const saveReport = async () => {
     const elementResultList = elementResults.filter({ app: app.key });
     const scenarioResultList = scenarioResults.filter({ app: app.key });
 
-    const history = historyState.apps[app.key] || getDefaultAppHistoryState();
+    const history = historyState.apps[app.key] || { total: [], scenarios: {} };
     const historyBuilder = new UICoverageHistoryBuilder({ history, settings });
     const coverageBuilder = new UICoverageBuilder({
       historyBuilder,
