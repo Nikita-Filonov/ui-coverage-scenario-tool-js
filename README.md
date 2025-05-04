@@ -35,7 +35,9 @@ top, letting you see exactly what was tested and how.
 - [Embedding the Agent Script](#embedding-the-agent-script)
 - [Usage](#usage)
     - [Playwright](#playwright)
+    - [Puppeteer](#puppeteer)
     - [Selenium](#selenium)
+    - [Advanced Example](#advanced-example)
     - [Coverage Report Generation](#coverage-report-generation)
 - [Configuration](#configuration)
     - [.env](#configuration-via-env)
@@ -296,6 +298,105 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
 })();
 
 ```
+
+### Advanced Example
+
+This example demonstrates how to use `ui-coverage-scenario-tool-js` with execution context to automatically track UI
+coverage scenarios in Playwright — without manually passing the tracker through every layer of your app.
+
+#### Step 1: Initialize the tracker
+
+Create a single instance of `UICoverageTracker` that will be shared across all tests.
+
+`./coverage.ts`
+
+```typescript
+import { UICoverageTracker } from 'ui-coverage-scenario-tool-js';
+
+export const tracker = new UICoverageTracker({ app: 'ui-course' });
+```
+
+#### Step 2: Extend Playwright’s test with scenario setup and teardown
+
+Create a custom test wrapper where:
+
+- the scenario is started before each test (with a name and a link to an external TMS),
+- and ended after the test is complete.
+
+`./tests/base.ts`
+
+```typescript
+import { test as base } from '@playwright/test';
+import { coverageContext } from 'ui-coverage-scenario-tool-js';
+import { tracker } from '../coverage';
+
+export const test = base.extend<{}>({
+  async page({ page }, use, testInfo) {
+    coverageContext.run(tracker, () => {
+      tracker.startScenario({
+        url: `https://company.tms.com/testcases/${testInfo.testId}`, // link to external test case
+        name: testInfo.title
+      });
+    });
+
+    await use(page);
+
+    await coverageContext.get()?.endScenario();
+  }
+});
+```
+
+_This uses `AsyncLocalStorage` internally to propagate the tracker across async calls — you don’t need to pass it
+manually._
+
+#### Step 3: Track interactions inside PageObjects
+
+Inside your PageObject or UI component, simply call `coverageContext.get()` to record interactions:
+
+`./pages/login-page.ts`
+
+```typescript
+import { Page } from '@playwright/test';
+import { ActionType, coverageContext, SelectorType } from 'ui-coverage-scenario-tool-js';
+
+export class LoginPage {
+  constructor(private page: Page) {
+  }
+
+  async clickLoginButton() {
+    await this.page.click('#login');
+
+    await coverageContext.get()?.trackCoverage({
+      selector: '#login',
+      actionType: ActionType.Click,
+      selectorType: SelectorType.CSS
+    });
+  }
+}
+```
+
+#### Step 4: Writing tests
+
+Now your test stays clean and focused — and coverage tracking happens behind the scenes.
+
+`./tests/important-feature.spec.ts`
+
+```typescript
+import { test } from './base';
+import { LoginPage } from '../pages/login-page';
+
+test('Should login via the login button', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.clickLoginButton();
+});
+```
+
+#### Why this matters
+
+- Context-aware tracking — no need to manually pass the tracker around.
+- Scenario binding — each interaction is tied to the test that triggered it.
+- TMS integration — easily associate scenarios with external test cases or tickets.
+- Parallel-safe — works reliably even with concurrent test execution.
 
 ### Coverage Report Generation
 
