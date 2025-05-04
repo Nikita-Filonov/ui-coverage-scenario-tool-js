@@ -1,6 +1,6 @@
 {
   "name": "ui-coverage-scenario-tool-js",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "files": [
     "dist",
@@ -20,7 +20,7 @@
     }
   },
   "bin": {
-    "ui-coverage-tool": "./dist/cli.js"
+    "ui-coverage-scenario-tool": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsup",
