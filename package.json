@@ -1,0 +1,69 @@
+{
+  "name": "ui-coverage-scenario-tool-js",
+  "version": "0.27.0",
+  "type": "module",
+  "files": [
+    "dist",
+    "dist/reports/templates"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./cli": {
+      "import": "./dist/cli.js"
+    }
+  },
+  "bin": {
+    "ui-coverage-tool": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "report:copy": "node scripts/copy-report.js",
+    "report:deploy": "node scripts/deploy-report.js"
+  },
+  "dependencies": {
+    "@types/node": "^22.14.1",
+    "commander": "^13.1.0",
+    "dotenv": "^16.5.0",
+    "js-yaml": "^4.1.0",
+    "typescript": "^5.8.3",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "eslint": "^9.26.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-react": "^1.1.7",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-react": "^7.37.4",
+    "prettier": "^3.4.2",
+    "tsup": "^8.4.0"
+  },
+  "bugs": {
+    "url": "https://github.com/Nikita-Filonov/ui-coverage-scenario-tool-js/issues"
+  },
+  "author": "Nikita Filonov filonov.nikitkaa@gmail.com (https://github.com/Nikita-Filonov)",
+  "license": "MIT",
+  "keywords": [
+    "ui",
+    "e2e",
+    "testing",
+    "coverage",
+    "selenium",
+    "playwright",
+    "visualization"
+  ],
+  "homepage": "https://github.com/Nikita-Filonov/ui-coverage-tool-js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nikita-Filonov/ui-coverage-scenario-tool-js.git"
+  }
+}
