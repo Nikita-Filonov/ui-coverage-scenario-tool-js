@@ -14,13 +14,15 @@ top, letting you see exactly what was tested and how.
 - **Custom highlight & badge colors:** Easily change the highlight and badge colors used in the iframe for different
   action types or UI states. Great for tailoring the report to your team's visual style or accessibility needs.
 - **No framework lock-in:** Works with any UI testing framework (Playwright, Selenium, etc.) by simply logging actions
-  via the `trackCoverage()` method.
+  via the `trackElement()` method.
 - **Element-level statistics:** View detailed statistics by selector: type of action, count of actions, and a timeline
   graph of coverage.
 - **Global history overview:** Track historical trends of total coverage and action types across time.
 - **Per-element timeline:** Dive deep into the history of interactions for each element — when and how it was used.
 - **Full element index:** Searchable table of all elements interacted with during tests, even if you're not sure where
   they are in the UI.
+- **Support for visualizing pages in a graph:** The tool offers a unique capability to build a graph of the pages
+  involved in tests, as well as the transitions between them.
 - **Multi-app support:** Testing multiple domains? No problem. Just list your apps in the config — the report will let
   you switch between them.
 
@@ -39,6 +41,7 @@ top, letting you see exactly what was tested and how.
     - [Selenium](#selenium)
     - [Advanced Example](#advanced-example)
     - [Coverage Report Generation](#coverage-report-generation)
+    - [Tracker Method Overview](#tracker-method-overview)
 - [Configuration](#configuration)
     - [.env](#configuration-via-env)
     - [YAML](#configuration-via-yaml)
@@ -66,6 +69,10 @@ If you have any questions or need assistance, feel free to ask [@Nikita Filonov]
 ### History
 
 ![History](./docs/screenshots/history.png "History")
+
+### Pages
+
+![Pages](./docs/screenshots/pages.png "Pages")
 
 ### Scenarios
 
@@ -155,7 +162,7 @@ That’s it. No other setup required. Without this script, the coverage report w
 
 Below are examples of how to use the tool with popular UI automation
 frameworks: `Playwright`, `Puppeteer`, `Selenium`. In both cases, coverage data is automatically saved to
-the `./coverage-results` folder after each call to `await tracker.trackCoverage(...)`.
+the `./coverage-results` folder after each call to `await tracker.trackElement(...)`.
 
 ### Playwright
 
@@ -186,7 +193,7 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
   await usernameInput.fill('user@example.com');
 
   // Track this interaction with the tracker
-  await tracker.trackCoverage({
+  await tracker.trackElement({
     selector: '#username-input',
     selectorType: SelectorType.CSS,
     actionType: ActionType.FILL
@@ -196,7 +203,7 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
   await loginButton.click();
 
   // Track the click action with the tracker
-  await tracker.trackCoverage({
+  await tracker.trackElement({
     selector: '//button[@id="login-button"]',
     selectorType: SelectorType.XPATH,
     actionType: ActionType.CLICK
@@ -214,7 +221,7 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
 Quick summary:
 
 - Call `tracker.startScenario(...)` to begin a new scenario.
-- Use `await tracker.trackCoverage(...)` after each user interaction.
+- Use `await tracker.trackElement(...)` after each user interaction.
 - Provide the selector, action type, and selector type.
 - The tool automatically stores tracking data as JSON files.
 - Once the scenario is complete, call `await tracker.endScenario()` to finalize and save it.
@@ -236,7 +243,7 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
   tracker.startScenario({ url: 'http://tms.com/test-cases/1', name: 'Successful login' });
 
   await page.type('#username-input', 'user@example.com');
-  await tracker.trackCoverage({
+  await tracker.trackElement({
     selector: '#username-input',
     selectorType: SelectorType.CSS,
     actionType: ActionType.FILL
@@ -245,7 +252,7 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
   const loginButton = await page.$x('//button[@id="login-button"]');
   if (loginButton[0]) {
     await loginButton[0].click();
-    await tracker.trackCoverage({
+    await tracker.trackElement({
       selector: '//button[@id="login-button"]',
       selectorType: SelectorType.XPATH,
       actionType: ActionType.CLICK
@@ -276,7 +283,7 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
     const usernameInput = await driver.findElement(By.css('#username-input'));
     await usernameInput.sendKeys('user@example.com');
 
-    await tracker.trackCoverage({
+    await tracker.trackElement({
       selector: '#username-input',
       actionType: ActionType.FILL,
       selectorType: SelectorType.CSS
@@ -285,7 +292,7 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
     const loginButton = await driver.findElement(By.xpath('//button[@id="login-button"]'));
     await loginButton.click();
 
-    await tracker.trackCoverage({
+    await tracker.trackElement({
       selector: '//button[@id="login-button"]',
       actionType: ActionType.CLICK,
       selectorType: SelectorType.XPATH
@@ -374,6 +381,13 @@ import {
 export class LoginPage {
   // Store the Playwright Page and coverage tracker
   constructor(private page: Page, private tracker: UICoverageTracker) {
+    // Track that the test has opened this page.
+    // Useful for identifying which pages were actually visited during test execution.
+    this.tracker.trackPage({
+      url: '/auth/login',  // Logical or real URL of the page
+      page: 'LoginPage',  // Human-readable name of the page
+      priority: 0  // Used to indicate order on the pages graph
+    });
   }
 
   // Method that performs the UI interaction and logs it for coverage
@@ -382,11 +396,15 @@ export class LoginPage {
     await this.page.click('#login');
 
     // Log the interaction to the coverage tracker
-    this.tracker.trackCoverage({
+    await this.tracker.trackElement({
       selector: '#login', // The CSS selector used
       actionType: ActionType.Click, // Action type (click, type, etc.)
       selectorType: SelectorType.CSS // How the selector was defined
     });
+
+    // Track the navigation that follows this interaction.
+    // Helps build a picture of the flow between pages.
+    await this.tracker.trackTransition({ fromPage: 'LoginPage', toPage: 'DashboardPage' });
   }
 }
 
@@ -414,7 +432,10 @@ test('Should login via the login button', async ({ page, tracker }) => {
 });
 ```
 
-The test stays clean and focused — and thanks to the fixture, the tracker lifecycle is fully automated.
+The test stays clean and focused — and thanks to the fixture, the tracker lifecycle is fully automated. This makes
+interaction tracking an integral part of your UI logic and encourages traceable, observable behavior within
+your components and flows. By logging page visits, element interactions, and navigation transitions, your test coverage
+becomes more transparent, measurable, and auditable.
 
 #### Why This Approach Works
 
@@ -426,7 +447,7 @@ The test stays clean and focused — and thanks to the fixture, the tracker life
 
 ### Coverage Report Generation
 
-After every call to `await tracker.trackCoverage(...)`, the tool automatically stores coverage data in
+After every call to `await tracker.trackElement(...)`, the tool automatically stores coverage data in
 the `./coverage-results/` directory as JSON files. You don’t need to manually manage the folder — it’s created and
 populated automatically.
 
@@ -438,7 +459,7 @@ populated automatically.
 ```
 
 When you call `tracker.startScenario(...)`, a new scenario automatically begins. All subsequent actions, such as
-`await tracker.trackCoverage(...)`, will be logged within the context of this scenario. To finalize and save the
+`await tracker.trackElement(...)`, will be logged within the context of this scenario. To finalize and save the
 scenario, you need to call `await tracker.endScenario()`. This method ends the scenario and saves it to a JSON file.
 
 ```
@@ -469,6 +490,79 @@ This will generate:
 **Important!** The `npx ui-coverage-scenario-tool save-report` command must be run from the **root of your project**,
 where your config files (`.env`, `ui-coverage-scenario.config.yaml`, etc.) are located. Running it from another
 directory may result in missing data or an empty report.
+
+### Tracker Method Overview
+
+#### 🔹 `startScenario`
+
+**Signature:** `await startScenario({ url, name }})`
+
+**What it does:** Begins a new UI coverage scenario. This groups all tracked interactions under a single logical test
+case.
+
+**When to use:** Call this at the beginning of each test, typically in a fixture or setup block.
+
+**Parameters:**
+
+- `url`: (Optional) External reference to a test case or issue (e.g., link to TMS or ticket)
+- `name`: A unique name for the scenario — for example, use `testInfo.title` in `playwright` to tie it to the test title
+
+#### 🔹 `endScenario`
+
+**Signature:** `endScenario()`
+
+**What it does:** Closes the current scenario and finalizes the coverage data collected for that test case.
+
+**When to use:** Call this at the **end of each test**, usually in teardown logic or after `yield` in a fixture.
+
+#### 🔹 `trackPage`
+
+**Signature:** `await trackPage({ url, page, priority })`
+
+**What it does:** Marks that a particular page was opened during the test. Useful for identifying what screens were
+visited and when.
+
+**When to use:** Call once in the constructor of each Page Object, or at the point where the test navigates to that
+page.
+
+**Parameters:**
+
+- `url`: Logical or actual route (e.g. `/auth/login`)
+- `page`: Readable identifier like `"LoginPage"`
+- `priority`: Optional number to order or weigh pages in reports
+
+#### 🔹 `trackElement`
+
+**Signature:** `await trackElement({ selector, actionType, selectorType })`
+
+**What it does:** Tracks interaction with a specific UI element (e.g., click, fill, select).
+
+**When to use:** Call it immediately after performing the user action — so that the test log reflects actual UI
+behavior.
+
+**Parameters:**
+
+- `selector`: The selector used in the action (e.g. `#login`)
+- `actionType`: The type of action (`CLICK`, `FILL`, etc.)
+- `selectorType`: Type of selector (`CSS`, `XPATH`)
+
+#### 🔹 `trackTransition`
+
+**Signature:** `trackTransition({ fromPage, toPage })`
+
+**What it does:** Marks a transition between two logical pages or views.
+
+**When to use:** After an action that leads to navigation (e.g., after login button click that brings you to dashboard).
+
+**Parameters:**
+
+- `fromPage`: Page before the transition
+- `toPage`: Page after the transition
+
+#### Why it matters
+
+These methods work together to give a complete picture of what pages, elements, and flows are covered by your tests —
+which can be visualized or analyzed later.
 
 ## Configuration
 
@@ -630,7 +724,7 @@ npx ui-coverage-scenario-tool print-config
 
 - Ensure that `startScenario()` is called before the test.
 - Ensure that `endScenario()` is called after the test.
-- Ensure that `trackCoverage()` is called during your test.
+- Ensure that `trackPage()`, `trackElement()`, `trackTransition()` is called during your test.
 - Make sure you run `npx ui-coverage-scenario-tool save-report` from the root directory.
 - Make sure to setup configuration correctly.
 - Check that the `coverage-results` directory contains `.json` files.

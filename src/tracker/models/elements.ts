@@ -1,7 +1,6 @@
-import { ActionType } from '../tools/actions';
-import { SelectorType } from '../tools/selector';
-import { AppKey, ScenarioName, Selector } from '../tools/types';
-import { buildSelectorGroupKey, SelectorGroupKey } from './selector';
+import { AppKey, ScenarioName, Selector } from '../../tools/types';
+import { ActionType } from '../../tools/actions';
+import { SelectorType } from '../../tools/selector';
 
 export interface CoverageElementResult {
   app: AppKey;
@@ -12,13 +11,6 @@ export interface CoverageElementResult {
   selectorType: SelectorType;
 }
 
-export interface CoverageScenarioResult {
-  app: AppKey;
-  url: string | null;
-  name: ScenarioName;
-}
-
-
 export class CoverageElementResultList {
   readonly results: CoverageElementResult[];
 
@@ -27,19 +19,20 @@ export class CoverageElementResultList {
   }
 
   filter({ app, scenario }: { app?: AppKey; scenario?: ScenarioName }): CoverageElementResultList {
-    const filtered = this.results.filter(r =>
-      !app || r.app.toLowerCase() === app.toLowerCase() &&
-      !scenario || r.scenario.toLowerCase() === scenario.toLowerCase()
+    const filtered = this.results.filter(
+      (result) =>
+        (!app || result.app.toLowerCase() === app.toLowerCase()) &&
+        (!scenario || result.scenario.toLowerCase() === scenario.toLowerCase())
     );
     return new CoverageElementResultList({ results: filtered });
   }
 
   get groupedByAction(): Map<ActionType, CoverageElementResultList> {
-    return this.groupBy(r => r.actionType);
+    return this.groupBy((r) => r.actionType);
   }
 
-  get groupedBySelector(): Map<SelectorGroupKey, CoverageElementResultList> {
-    return this.groupBy(buildSelectorGroupKey);
+  get groupedBySelector(): Map<string, CoverageElementResultList> {
+    return this.groupBy((r) => `${encodeURIComponent(r.selector)}|${r.selectorType}`);
   }
 
   get totalActions(): number {
@@ -51,7 +44,7 @@ export class CoverageElementResultList {
   }
 
   countAction(actionType: ActionType): number {
-    return this.results.filter(r => r.actionType === actionType).length;
+    return this.results.filter((r) => r.actionType === actionType).length;
   }
 
   private groupBy<K>(keyGetter: (r: CoverageElementResult) => K): Map<K, CoverageElementResultList> {
@@ -69,18 +62,5 @@ export class CoverageElementResultList {
     }
 
     return resultMap;
-  }
-}
-
-export class CoverageScenarioResultList {
-  readonly results: CoverageScenarioResult[];
-
-  constructor({ results }: { results: CoverageScenarioResult[] }) {
-    this.results = results;
-  }
-
-  filter({ app }: { app?: AppKey }): CoverageScenarioResultList {
-    const filtered = this.results.filter(r => !app || r.app.toLowerCase() === app.toLowerCase());
-    return new CoverageScenarioResultList({ results: filtered });
   }
 }

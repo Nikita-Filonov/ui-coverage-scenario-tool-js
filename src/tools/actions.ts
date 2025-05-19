@@ -19,10 +19,7 @@ export enum ActionType {
   Unchecked = 'UNCHECKED'
 }
 
-
 export interface ActionCoverage {
   count: number;
   actionType: ActionType;
 }
-
-

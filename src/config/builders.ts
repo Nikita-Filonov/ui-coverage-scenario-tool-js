@@ -13,32 +13,33 @@ const cleanUndefined = <T>(input: Partial<T>): Partial<T> => {
   return Object.fromEntries(Object.entries(input).filter(([_, v]) => v !== undefined)) as Partial<T>;
 };
 
-export const buildEnvSettings = (): Partial<Settings> => cleanUndefined({
-  apps: loadJson<AppConfig[]>({ content: process.env.UI_COVERAGE_SCENARIO_APPS || '', fallback: [] }),
-  resultsDir: process.env.UI_COVERAGE_SCENARIO_RESULTS_DIR || undefined,
-  historyFile: process.env.UI_COVERAGE_SCENARIO_HISTORY_FILE || undefined,
-  historyRetentionLimit: parseInt(process.env.UI_COVERAGE_SCENARIO_HISTORY_RETENTION_LIMIT || '', 10) || undefined,
-  htmlReportFile: process.env.UI_COVERAGE_SCENARIO_HTML_REPORT_FILE || undefined,
-  jsonReportFile: process.env.UI_COVERAGE_SCENARIO_JSON_REPORT_FILE || undefined
-});
+export const buildEnvSettings = (): Partial<Settings> => {
+  return cleanUndefined({
+    apps: loadJson<AppConfig[]>({ content: process.env.UI_COVERAGE_SCENARIO_APPS || '', fallback: [] }),
+    resultsDir: process.env.UI_COVERAGE_SCENARIO_RESULTS_DIR || undefined,
+    historyFile: process.env.UI_COVERAGE_SCENARIO_HISTORY_FILE || undefined,
+    historyRetentionLimit: parseInt(process.env.UI_COVERAGE_SCENARIO_HISTORY_RETENTION_LIMIT || '', 10) || undefined,
+    htmlReportFile: process.env.UI_COVERAGE_SCENARIO_HTML_REPORT_FILE || undefined,
+    jsonReportFile: process.env.UI_COVERAGE_SCENARIO_JSON_REPORT_FILE || undefined
+  });
+};
 
 export const buildJsonSettings = () => {
-  return cleanUndefined(
-    loadFromJson<Settings>(path.join(cwd, 'ui-coverage-scenario.config.json'))
-  );
+  return cleanUndefined(loadFromJson<Settings>(path.join(cwd, 'ui-coverage-scenario.config.json')));
 };
 
 export const buildYamlSettings = () => {
-  return cleanUndefined(
-    loadFromYaml<Settings>(path.join(cwd, 'ui-coverage-scenario.config.yaml'))
-  );
+  return cleanUndefined(loadFromYaml<Settings>(path.join(cwd, 'ui-coverage-scenario.config.yaml')));
 };
 
 export const buildDefaultSettings = (): Settings => {
   let htmlReportTemplateFile: string;
   try {
-    htmlReportTemplateFile = path.join(path.dirname(url.fileURLToPath(import.meta.url)), 'reports/templates/index.html');
-  } catch (err) {
+    htmlReportTemplateFile = path.join(
+      path.dirname(url.fileURLToPath(import.meta.url)),
+      'reports/templates/index.html'
+    );
+  } catch {
     htmlReportTemplateFile = path.join(cwd, 'src/reports/templates/index.html');
   }
 

@@ -3,31 +3,31 @@ import { ScenarioName } from '../tools/types';
 import { Settings } from '../config/models';
 
 type UICoverageHistoryBuilderProps = {
-  history: AppHistoryState
-  settings: Settings
-}
+  history: AppHistoryState;
+  settings: Settings;
+};
 
 type GetScenarioHistoryProps = {
-  name: ScenarioName
-  actions: ActionHistory[],
-}
+  name: ScenarioName;
+  actions: ActionHistory[];
+};
 
 type BuildAppHistoryProps = {
-  actions: ActionHistory[],
-  totalActions: number,
-  totalElements: number
-}
+  actions: ActionHistory[];
+  totalActions: number;
+  totalElements: number;
+};
 
 type BuildScenarioHistoryProps = {
-  actions: ActionHistory[]
-}
+  actions: ActionHistory[];
+};
 
-type BaseHistory = { actions: ActionHistory[]; createdAt: Date }
+type BaseHistory = { actions: ActionHistory[]; createdAt: Date };
 
 type AppendHistoryProps<T extends BaseHistory> = {
-  history: T[],
-  buildFunc: () => T
-}
+  history: T[];
+  buildFunc: () => T;
+};
 
 export class UICoverageHistoryBuilder {
   private history: AppHistoryState;
@@ -58,9 +58,7 @@ export class UICoverageHistoryBuilder {
       return history;
     }
 
-    const combined = [...history, newItem].sort(
-      (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
-    );
+    const combined = [...history, newItem].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
     return combined.slice(-this.settings.historyRetentionLimit);
   }

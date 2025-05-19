@@ -4,28 +4,26 @@ import { v4 as uuidv4 } from 'uuid';
 import { getLogger } from '../tools/logger';
 import { Settings } from '../config/models';
 import { isPathExists } from '../tools/files';
-import {
-  CoverageElementResult,
-  CoverageElementResultList,
-  CoverageScenarioResult,
-  CoverageScenarioResultList
-} from './models';
+import { CoveragePageResult, CoveragePageResultList } from './models/pages';
+import { CoverageElementResult, CoverageElementResultList } from './models/elements';
+import { CoverageScenarioResult, CoverageScenarioResultList } from './models/scenarios';
+import { CoverageTransitionResult, CoverageTransitionResultList } from './models/transitions';
 
 const logger = getLogger('UI_COVERAGE_TRACKER_STORAGE');
 
 type ResultListInterface<Result> = {
-  new({ results }: { results: Result[] });
+  new ({ results }: { results: Result[] });
 };
 
 type LoadProps<Result> = {
-  context: string
-  resultList: ResultListInterface<Result>
-}
+  context: string;
+  resultList: ResultListInterface<Result>;
+};
 
 type SaveProps<Result> = {
-  result: Result
-  context: string
-}
+  result: Result;
+  context: string;
+};
 
 export class UICoverageTrackerStorage {
   private settings: Settings;
@@ -34,7 +32,9 @@ export class UICoverageTrackerStorage {
     this.settings = settings;
   }
 
-  async load<Result, ResultList extends ResultListInterface<Result>>(props: LoadProps<Result>): Promise<InstanceType<ResultList>> {
+  async load<Result, ResultList extends ResultListInterface<Result>>(
+    props: LoadProps<Result>
+  ): Promise<InstanceType<ResultList>> {
     const { context, resultList } = props;
     const resultsDir = this.settings.resultsDir;
 
@@ -81,19 +81,35 @@ export class UICoverageTrackerStorage {
     }
   }
 
+  async savePageResult(result: CoveragePageResult): Promise<void> {
+    await this.save({ context: 'page', result });
+  }
+
   async saveElementResult(result: CoverageElementResult) {
     await this.save({ context: 'element', result });
+  }
+
+  async saveScenarioResult(result: CoverageScenarioResult) {
+    await this.save({ context: 'scenario', result });
+  }
+
+  async saveTransitionResult(result: CoverageTransitionResult) {
+    await this.save({ context: 'transition', result });
+  }
+
+  async loadPageResults(): Promise<CoveragePageResultList> {
+    return await this.load({ context: 'page', resultList: CoveragePageResultList });
   }
 
   async loadElementResults(): Promise<CoverageElementResultList> {
     return await this.load({ context: 'element', resultList: CoverageElementResultList });
   }
 
-  async saveScenarioResult(result: CoverageScenarioResult) {
-    this.save({ context: 'scenario', result });
-  }
-
   async loadScenarioResults(): Promise<CoverageScenarioResultList> {
     return await this.load({ context: 'scenario', resultList: CoverageScenarioResultList });
+  }
+
+  async loadTransitionResults(): Promise<CoverageTransitionResultList> {
+    return await this.load({ context: 'transition', resultList: CoverageTransitionResultList });
   }
 }

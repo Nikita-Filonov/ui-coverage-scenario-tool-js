@@ -4,19 +4,13 @@ import { printConfig } from './commands/print-config';
 
 const program = new Command();
 
-program
-  .name('ui-coverage-scenario-tool')
-  .description('UI Coverage Scenario CLI Tool')
-  .version('0.9.0');
+program.name('ui-coverage-scenario-tool').description('UI Coverage Scenario CLI Tool').version('0.11.0');
 
 program
   .command('save-report')
   .description('Generate a coverage report based on collected result files.')
   .action(saveReport);
 
-program
-  .command('print-config')
-  .description('Print the resolved configuration to the console.')
-  .action(printConfig);
+program.command('print-config').description('Print the resolved configuration to the console.').action(printConfig);
 
 program.parse(process.argv);

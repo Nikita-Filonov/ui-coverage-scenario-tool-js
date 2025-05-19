@@ -29,7 +29,7 @@ export const loadFromJson = <T>(file: string): Partial<T> => {
 export const loadFromYaml = <T>(file: string): Partial<T> => {
   try {
     if (!fs.existsSync(file)) return {};
-    
+
     const raw = fs.readFileSync(file, 'utf-8');
     return yaml.load(raw) as Partial<T>;
   } catch (error) {
@@ -37,4 +37,3 @@ export const loadFromYaml = <T>(file: string): Partial<T> => {
     return {};
   }
 };
-

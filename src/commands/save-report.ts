@@ -24,18 +24,24 @@ export const saveReport = async () => {
     appsCoverage: {}
   };
   const historyState = await historyStorage.load();
+  const pageResults = await trackerStorage.loadPageResults();
   const elementResults = await trackerStorage.loadElementResults();
   const scenarioResults = await trackerStorage.loadScenarioResults();
+  const transitionResults = await trackerStorage.loadTransitionResults();
   for (const app of settings.apps) {
+    const pageResultList = pageResults.filter({ app: app.key });
     const elementResultList = elementResults.filter({ app: app.key });
     const scenarioResultList = scenarioResults.filter({ app: app.key });
+    const transitionResultList = transitionResults.filter({ app: app.key });
 
     const history = historyState.apps[app.key] || { total: [], scenarios: {} };
     const historyBuilder = new UICoverageHistoryBuilder({ history, settings });
     const coverageBuilder = new UICoverageBuilder({
       historyBuilder,
+      pageResultList,
       elementResultList,
-      scenarioResultList
+      scenarioResultList,
+      transitionResultList
     });
     reportState.appsCoverage[app.key] = coverageBuilder.build();
   }
