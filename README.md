@@ -495,7 +495,7 @@ directory may result in missing data or an empty report.
 
 #### 🔹 `startScenario`
 
-**Signature:** `await startScenario({ url, name }})`
+**Signature:** `startScenario({ url, name }})`
 
 **What it does:** Begins a new UI coverage scenario. This groups all tracked interactions under a single logical test
 case.
@@ -509,7 +509,7 @@ case.
 
 #### 🔹 `endScenario`
 
-**Signature:** `endScenario()`
+**Signature:** `await endScenario()`
 
 **What it does:** Closes the current scenario and finalizes the coverage data collected for that test case.
 
