@@ -4,7 +4,7 @@ import { printConfig } from './commands/print-config';
 
 const program = new Command();
 
-program.name('ui-coverage-scenario-tool').description('UI Coverage Scenario CLI Tool').version('0.11.0');
+program.name('ui-coverage-scenario-tool').description('UI Coverage Scenario CLI Tool').version('0.13.0');
 
 program
   .command('save-report')
