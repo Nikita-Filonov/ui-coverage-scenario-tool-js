@@ -11,7 +11,7 @@ export interface ScenarioCoverageStep {
 }
 
 export interface ScenarioCoverage {
-  url: string | number;
+  url: string | null;
   name: ScenarioName;
   steps: ScenarioCoverageStep[];
   actions: ActionCoverage[];

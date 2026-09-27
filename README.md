@@ -1,5 +1,10 @@
 # UI Coverage Scenario Tool
 
+[![Test](https://github.com/Nikita-Filonov/ui-coverage-scenario-tool-js/actions/workflows/workflow-test.yml/badge.svg)](https://github.com/Nikita-Filonov/ui-coverage-scenario-tool-js/actions/workflows/workflow-test.yml)
+[![codecov](https://codecov.io/gh/Nikita-Filonov/ui-coverage-scenario-tool-js/branch/main/graph/badge.svg)](https://codecov.io/gh/Nikita-Filonov/ui-coverage-scenario-tool-js)
+[![npm](https://img.shields.io/npm/v/ui-coverage-scenario-tool-js)](https://www.npmjs.com/package/ui-coverage-scenario-tool-js)
+[![License](https://img.shields.io/github/license/Nikita-Filonov/ui-coverage-scenario-tool-js)](LICENSE)
+
 **UI Coverage Scenario Tool** is an innovative, no-overhead solution for tracking and visualizing UI test coverage —
 directly on your actual application, not static snapshots. The tool collects coverage during UI test execution and
 generates an interactive HTML report. This report embeds a live iframe of your application and overlays coverage data on
@@ -36,17 +41,17 @@ top, letting you see exactly what was tested and how.
 - [Installation](#installation)
 - [Embedding the Agent Script](#embedding-the-agent-script)
 - [Usage](#usage)
-    - [Playwright](#playwright)
-    - [Puppeteer](#puppeteer)
-    - [Selenium](#selenium)
-    - [Advanced Example](#advanced-example)
-    - [Coverage Report Generation](#coverage-report-generation)
-    - [Tracker Method Overview](#tracker-method-overview)
+  - [Playwright](#playwright)
+  - [Puppeteer](#puppeteer)
+  - [Selenium](#selenium)
+  - [Advanced Example](#advanced-example)
+  - [Coverage Report Generation](#coverage-report-generation)
+  - [Tracker Method Overview](#tracker-method-overview)
 - [Configuration](#configuration)
-    - [.env](#configuration-via-env)
-    - [YAML](#configuration-via-yaml)
-    - [JSON](#configuration-via-json)
-    - [Reference](#configuration-reference)
+  - [.env](#configuration-via-env)
+  - [YAML](#configuration-via-yaml)
+  - [JSON](#configuration-via-json)
+  - [Reference](#configuration-reference)
 - [Command-Line Interface (CLI)](#command-line-interface-cli)
 
 ## Links
@@ -64,27 +69,27 @@ If you have any questions or need assistance, feel free to ask [@Nikita Filonov]
 
 ### Summary
 
-![Summary](./docs/screenshots/summary.png "Summary")
+![Summary](./docs/screenshots/summary.png 'Summary')
 
 ### History
 
-![History](./docs/screenshots/history.png "History")
+![History](./docs/screenshots/history.png 'History')
 
 ### Pages
 
-![Pages](./docs/screenshots/pages.png "Pages")
+![Pages](./docs/screenshots/pages.png 'Pages')
 
 ### Scenarios
 
-![Scenarios](./docs/screenshots/scenarios.png "Scenarios")
+![Scenarios](./docs/screenshots/scenarios.png 'Scenarios')
 
 ### Scenario Details
 
-![Scenario Details](./docs/screenshots/scenario_details.png "Scenario Details")
+![Scenario Details](./docs/screenshots/scenario_details.png 'Scenario Details')
 
 ### Element Details
 
-![Element Details](./docs/screenshots/element_details.png "Element Details")
+![Element Details](./docs/screenshots/element_details.png 'Element Details')
 
 ## About the Tools
 
@@ -105,14 +110,14 @@ Insightful This is the advanced version of the original tool, built on top of al
 
 - Includes everything from `ui-coverage-tool-js`
 - Adds **scenario-level structure**, so your coverage report shows:
-    - Which **scenarios** were executed
-    - Which **elements** were used in each scenario
-    - Which **scenarios** interacted with a given element
+  - Which **scenarios** were executed
+  - Which **elements** were used in each scenario
+  - Which **scenarios** interacted with a given element
 - Lets you **link scenarios to TMS test cases** or documentation (e.g. via URLs)
 - Offers additional options like:
-    - **Iframe zoom settings**
-    - **Scenario metadata**
-    - **Advanced filtering and analysis**
+  - **Iframe zoom settings**
+  - **Scenario metadata**
+  - **Advanced filtering and analysis**
 
 If your team needs deeper visibility into business processes and scenario
 coverage, [ui-coverage-scenario-tool](https://github.com/Nikita-Filonov/ui-coverage-scenario-tool) is the way to go.
@@ -124,13 +129,15 @@ While `ui-coverage-scenario-tool-js` is more powerful, the original `ui-coverage
 They serve different purposes:
 
 | Tool                           | Best For                                      | Strengths                                     |
-|--------------------------------|-----------------------------------------------|-----------------------------------------------|
+| ------------------------------ | --------------------------------------------- | --------------------------------------------- |
 | `ui-coverage-tool-js`          | Quick setup, lightweight testing environments | Easy to integrate, minimal overhead           |
 | `ui-coverage-scenario-tool-js` | Structured E2E scenarios, business test cases | Rich detail, scenario linkage, deeper insight |
 
 Keeping them separate allows users to choose based on **project needs**, **team maturity**, and **desired complexity**.
 
 ## Installation
+
+Requires Node.js 22.18+ on the 22.x line, or Node.js 24.11+.
 
 ### With npm
 
@@ -152,7 +159,6 @@ application.
 Add this to your HTML:
 
 ```html
-
 <script src="https://nikita-filonov.github.io/ui-coverage-scenario-report/agent.global.js"></script>
 ```
 
@@ -161,7 +167,7 @@ That’s it. No other setup required. Without this script, the coverage report w
 ## Usage
 
 Below are examples of how to use the tool with popular UI automation
-frameworks: `Playwright`, `Puppeteer`, `Selenium`. In both cases, coverage data is automatically saved to
+frameworks: `Playwright`, `Puppeteer`, `Selenium`. In all examples, coverage data is automatically saved to
 the `./coverage-results` folder after each call to `await tracker.trackElement(...)`.
 
 ### Playwright
@@ -171,11 +177,11 @@ import { chromium } from 'playwright';
 // Import the main components of the tool:
 // - UICoverageTracker — the main class for tracking coverage
 // - SelectorType — type of selector (CSS, XPATH)
-// - ActionType — type of action (CLICK, FILL, CHECK_VISIBLE, etc.)
+// - ActionType — type of action (CLICK, FILL, VISIBLE, etc.)
 import { ActionType, SelectorType, UICoverageTracker } from 'ui-coverage-scenario-tool-js';
 
 // Create an instance of the tracker.
-// The `app` value should match the name in your UI_COVERAGE_APPS config.
+// The `app` value should match the key in your UI_COVERAGE_SCENARIO_APPS config.
 const tracker = new UICoverageTracker({ app: 'my-ui-app' });
 
 (async () => {
@@ -196,7 +202,7 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
   await tracker.trackElement({
     selector: '#username-input',
     selectorType: SelectorType.CSS,
-    actionType: ActionType.FILL
+    actionType: ActionType.Fill
   });
 
   const loginButton = page.locator('//button[@id="login-button"]');
@@ -205,8 +211,8 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
   // Track the click action with the tracker
   await tracker.trackElement({
     selector: '//button[@id="login-button"]',
-    selectorType: SelectorType.XPATH,
-    actionType: ActionType.CLICK
+    selectorType: SelectorType.XPath,
+    actionType: ActionType.Click
   });
 
   // End the current scenario.
@@ -215,7 +221,6 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
 
   await browser.close();
 })();
-
 ```
 
 Quick summary:
@@ -246,18 +251,16 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
   await tracker.trackElement({
     selector: '#username-input',
     selectorType: SelectorType.CSS,
-    actionType: ActionType.FILL
+    actionType: ActionType.Fill
   });
 
-  const loginButton = await page.$x('//button[@id="login-button"]');
-  if (loginButton[0]) {
-    await loginButton[0].click();
-    await tracker.trackElement({
-      selector: '//button[@id="login-button"]',
-      selectorType: SelectorType.XPATH,
-      actionType: ActionType.CLICK
-    });
-  }
+  const loginButton = page.locator('::-p-xpath(//button[@id="login-button"])');
+  await loginButton.click();
+  await tracker.trackElement({
+    selector: '//button[@id="login-button"]',
+    selectorType: SelectorType.XPath,
+    actionType: ActionType.Click
+  });
 
   await tracker.endScenario();
   await browser.close();
@@ -285,7 +288,7 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
 
     await tracker.trackElement({
       selector: '#username-input',
-      actionType: ActionType.FILL,
+      actionType: ActionType.Fill,
       selectorType: SelectorType.CSS
     });
 
@@ -294,16 +297,14 @@ const tracker = new UICoverageTracker({ app: 'my-ui-app' });
 
     await tracker.trackElement({
       selector: '//button[@id="login-button"]',
-      actionType: ActionType.CLICK,
-      selectorType: SelectorType.XPATH
+      actionType: ActionType.Click,
+      selectorType: SelectorType.XPath
     });
-
   } finally {
     await tracker.endScenario();
     await driver.quit();
   }
 })();
-
 ```
 
 ### Advanced Example
@@ -372,21 +373,23 @@ We pass both the `Page` and the `tracker` to the constructor — making dependen
 
 ```typescript
 import { Page } from '@playwright/test';
-import {
-  ActionType,
-  SelectorType,
-  UICoverageTracker
-} from 'ui-coverage-scenario-tool-js';
+import { ActionType, SelectorType, UICoverageTracker } from 'ui-coverage-scenario-tool-js';
 
 export class LoginPage {
   // Store the Playwright Page and coverage tracker
-  constructor(private page: Page, private tracker: UICoverageTracker) {
+  constructor(
+    private page: Page,
+    private tracker: UICoverageTracker
+  ) {}
+
+  async open() {
+    await this.page.goto('/auth/login');
     // Track that the test has opened this page.
     // Useful for identifying which pages were actually visited during test execution.
-    this.tracker.trackPage({
-      url: '/auth/login',  // Logical or real URL of the page
-      page: 'LoginPage',  // Human-readable name of the page
-      priority: 0  // Used to indicate order on the pages graph
+    await this.tracker.trackPage({
+      url: '/auth/login', // Logical or real URL of the page
+      page: 'LoginPage', // Human-readable name of the page
+      priority: 0 // Used to indicate order on the pages graph
     });
   }
 
@@ -407,7 +410,6 @@ export class LoginPage {
     await this.tracker.trackTransition({ fromPage: 'LoginPage', toPage: 'DashboardPage' });
   }
 }
-
 ```
 
 This keeps your UI coverage logic close to the interaction logic, improving observability and maintainability.
@@ -426,6 +428,7 @@ import { LoginPage } from '../pages/login-page';
 test('Should login via the login button', async ({ page, tracker }) => {
   // Pass both page and tracker to the page object
   const loginPage = new LoginPage(page, tracker);
+  await loginPage.open();
 
   // Perform the action; the interaction will be logged for coverage
   await loginPage.clickLoginButton();
@@ -473,21 +476,21 @@ Once your tests are complete and coverage data has been collected, generate a fi
 command:
 
 ```shell
-npx ui-coverage-scenario-tool save-report
+npx --package ui-coverage-scenario-tool-js ui-coverage-scenario-tool save-report
 ```
 
 This will generate:
 
 - `index.html` — a standalone HTML report that you can:
-    - Open directly in your browser
-    - Share with your team
-    - Publish to GitHub Pages / GitLab Pages
+  - Open directly in your browser
+  - Share with your team
+  - Publish to GitHub Pages / GitLab Pages
 - `coverage-report.json` — a structured JSON report that can be used for:
-    - Printing a coverage summary in CI/CD logs
-    - Sending metrics to external systems
-    - Custom integrations or dashboards
+  - Printing a coverage summary in CI/CD logs
+  - Sending metrics to external systems
+  - Custom integrations or dashboards
 
-**Important!** The `npx ui-coverage-scenario-tool save-report` command must be run from the **root of your project**,
+**Important!** The `npx --package ui-coverage-scenario-tool-js ui-coverage-scenario-tool save-report` command must be run from the **root of your project**,
 where your config files (`.env`, `ui-coverage-scenario.config.yaml`, etc.) are located. Running it from another
 directory may result in missing data or an empty report.
 
@@ -495,7 +498,7 @@ directory may result in missing data or an empty report.
 
 #### 🔹 `startScenario`
 
-**Signature:** `startScenario({ url, name }})`
+**Signature:** `startScenario({ url, name })`
 
 **What it does:** Begins a new UI coverage scenario. This groups all tracked interactions under a single logical test
 case.
@@ -504,7 +507,7 @@ case.
 
 **Parameters:**
 
-- `url`: (Optional) External reference to a test case or issue (e.g., link to TMS or ticket)
+- `url`: External reference to a test case or issue (e.g., link to TMS or ticket); pass `null` when there is no link
 - `name`: A unique name for the scenario — for example, use `testInfo.title` in `playwright` to tie it to the test title
 
 #### 🔹 `endScenario`
@@ -522,14 +525,13 @@ case.
 **What it does:** Marks that a particular page was opened during the test. Useful for identifying what screens were
 visited and when.
 
-**When to use:** Call once in the constructor of each Page Object, or at the point where the test navigates to that
-page.
+**When to use:** Await this at the point where the test navigates to the page, for example in a Page Object’s `open()` method.
 
 **Parameters:**
 
 - `url`: Logical or actual route (e.g. `/auth/login`)
 - `page`: Readable identifier like `"LoginPage"`
-- `priority`: Optional number to order or weigh pages in reports
+- `priority`: Number to order or weigh pages in reports
 
 #### 🔹 `trackElement`
 
@@ -548,7 +550,7 @@ behavior.
 
 #### 🔹 `trackTransition`
 
-**Signature:** `trackTransition({ fromPage, toPage })`
+**Signature:** `await trackTransition({ fromPage, toPage })`
 
 **What it does:** Marks a transition between two logical pages or views.
 
@@ -580,13 +582,14 @@ via [getSettings()](./src/config/core.ts).
 
 ### Configuration via `.env`
 
-All settings can be declared using environment variables. Nested fields use dot notation, and all variables must be
-prefixed with `UI_COVERAGE_SCENARIO_`.
+Settings can be declared using environment variables prefixed with `UI_COVERAGE_SCENARIO_`. `APPS` is a JSON array.
+Configuration is merged in this order: defaults, YAML, JSON, environment variables. Later sources override earlier ones.
+Set `historyFile`, `htmlReportFile` or `jsonReportFile` to `null` in YAML/JSON to disable that output.
 
 **Example:** [.env](docs/configs/.env.example)
 
 ```dotenv
-# Define the applications that should be tracked. In the case of multiple apps, they can be added in a comma-separated list.
+# Define the applications that should be tracked. Use a JSON array for multiple apps.
 UI_COVERAGE_SCENARIO_APPS='[
     {
         "key": "my-ui-app",
@@ -617,17 +620,17 @@ UI_COVERAGE_SCENARIO_JSON_REPORT_FILE="./coverage-report.json"
 
 ```yaml
 apps:
-  - key: "my-ui-app"
-    url: "https://my-ui-app.com/login",
-    name: "My UI App"
-    tags: [ "UI", "PRODUCTION" ]
-    repository: "https://github.com/my-ui-app"
+  - key: 'my-ui-app'
+    url: 'https://my-ui-app.com/login'
+    name: 'My UI App'
+    tags: ['UI', 'PRODUCTION']
+    repository: 'https://github.com/my-ui-app'
 
-resultsDir: "./coverage-results"
-historyFile: "./coverage-history.json"
+resultsDir: './coverage-results'
+historyFile: './coverage-history.json'
 historyRetentionLimit: 30
-htmlReportFile: "./index.html"
-jsonReportFile: "./coverage-report.json"
+htmlReportFile: './index.html'
+jsonReportFile: './coverage-report.json'
 ```
 
 ### Configuration via JSON
@@ -641,10 +644,7 @@ jsonReportFile: "./coverage-report.json"
       "key": "my-ui-app",
       "url": "https://my-ui-app.com/login",
       "name": "My UI App",
-      "tags": [
-        "UI",
-        "PRODUCTION"
-      ],
+      "tags": ["UI", "PRODUCTION"],
       "repository": "https://github.com/my-ui-app"
     }
   ],
@@ -659,18 +659,18 @@ jsonReportFile: "./coverage-report.json"
 ### Configuration Reference
 
 | Key                     | Description                                                               | Required | Default                   |
-|-------------------------|---------------------------------------------------------------------------|----------|---------------------------|
-| `apps`                  | List of applications to track. Each must define `key`, `name`, and `url`. | ✅        | —                         |
-| `services[].key`        | Unique internal identifier for the service.                               | ✅        | —                         |
-| `services[].url`        | Entry point URL of the app.                                               | ✅        | —                         |
-| `services[].name`       | Human-friendly name for the service (used in reports).                    | ✅        | —                         |
-| `services[].tags`       | Optional tags used in reports for filtering or grouping.                  | ❌        | —                         |
-| `services[].repository` | Optional repository URL (will be shown in report).                        | ❌        | —                         |
-| `resultsDir`            | Directory to store raw coverage result files.                             | ❌        | `./coverage-results`      |
-| `historyFile`           | File to store historical coverage data.                                   | ❌        | `./coverage-history.json` |
-| `historyRetentionLimit` | Maximum number of historical entries to keep.                             | ❌        | `30`                      |
-| `htmlReportFile`        | Path to save the final HTML report (if enabled).                          | ❌        | `./index.html`            |
-| `jsonReportFile`        | Path to save the raw JSON report (if enabled).                            | ❌        | `./coverage-report.json`  |
+| ----------------------- | ------------------------------------------------------------------------- | -------- | ------------------------- |
+| `apps`                  | List of applications to track. Each must define `key`, `name`, and `url`. | ✅       | —                         |
+| `apps[].key`            | Unique internal identifier for the service.                               | ✅       | —                         |
+| `apps[].url`            | Entry point URL of the app.                                               | ✅       | —                         |
+| `apps[].name`           | Human-friendly name for the service (used in reports).                    | ✅       | —                         |
+| `apps[].tags`           | Optional tags used in reports for filtering or grouping.                  | ❌       | —                         |
+| `apps[].repository`     | Optional repository URL (will be shown in report).                        | ❌       | —                         |
+| `resultsDir`            | Directory to store raw coverage result files.                             | ❌       | `./coverage-results`      |
+| `historyFile`           | File to store historical coverage data.                                   | ❌       | `./coverage-history.json` |
+| `historyRetentionLimit` | Maximum number of historical entries to keep.                             | ❌       | `30`                      |
+| `htmlReportFile`        | Path to save the final HTML report (if enabled).                          | ❌       | `./index.html`            |
+| `jsonReportFile`        | Path to save the raw JSON report (if enabled).                            | ❌       | `./coverage-report.json`  |
 
 ### How It Works
 
@@ -694,7 +694,7 @@ data stored in the `coverage-results` directory and generate an HTML report.
 **Usage:**
 
 ```shell
-npx ui-coverage-scenario-tool save-report
+npx --package ui-coverage-scenario-tool-js ui-coverage-scenario-tool save-report
 ```
 
 - This is the main command to generate a coverage report. After executing UI tests and collecting coverage data, use
@@ -709,7 +709,7 @@ file has been loaded and parsed correctly.
 **Usage:**
 
 ```shell
-npx ui-coverage-scenario-tool print-config
+npx --package ui-coverage-scenario-tool-js ui-coverage-scenario-tool print-config
 ```
 
 - This command reads the configuration file (`ui-coverage-scenario.config.yaml`, `ui-coverage-scenario.config.json`,
@@ -718,6 +718,16 @@ npx ui-coverage-scenario-tool print-config
 - It helps verify that the correct settings are being applied and is particularly useful if something is not working as
   expected.
 
+### Command: `clear-results`
+
+Removes collected `*-page.json`, `*-element.json`, `*-scenario.json` and `*-transition.json` files from the configured
+results directory. Reports, history, other files and nested directories are preserved. Run this before a new test run
+when its report should include only that run's results.
+
+```shell
+npx --package ui-coverage-scenario-tool-js ui-coverage-scenario-tool clear-results
+```
+
 ## Troubleshooting
 
 ### The report is empty or missing data
@@ -725,6 +735,6 @@ npx ui-coverage-scenario-tool print-config
 - Ensure that `startScenario()` is called before the test.
 - Ensure that `endScenario()` is called after the test.
 - Ensure that `trackPage()`, `trackElement()`, `trackTransition()` is called during your test.
-- Make sure you run `npx ui-coverage-scenario-tool save-report` from the root directory.
+- Make sure you run `npx --package ui-coverage-scenario-tool-js ui-coverage-scenario-tool save-report` from the root directory.
 - Make sure to setup configuration correctly.
 - Check that the `coverage-results` directory contains `.json` files.

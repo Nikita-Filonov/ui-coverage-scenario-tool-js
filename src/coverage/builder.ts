@@ -89,9 +89,7 @@ export class UICoverageBuilder {
 
     const actions: ActionHistory[] = [];
     for (const [action, results] of this.elementResultList.groupedByAction.entries()) {
-      if (results.totalActions > 0) {
-        actions.push({ actionType: action, count: results.totalActions });
-      }
+      actions.push({ actionType: action, count: results.totalActions });
     }
 
     const scenarios: ScenarioCoverage[] = this.scenarioResultList.results.map((scenario) =>
